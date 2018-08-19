@@ -38,6 +38,7 @@ public class Graph {
 
     public void addEdge(int start, int end, int weight) {
         adjMat[start][end] = weight; // (directed)
+        adjMat[end][start] = weight; // (directed)
     }
 
     public void shortestPathToArea(String area, double amount) // find the shortest path to area
@@ -183,16 +184,16 @@ public class Graph {
 
     public int getAdjUnvisitedVertex(int v) {
         for (int j = 0; j < nVerts; j++)
-            if (adjMat[v][j] > 0 && vertexList[j].wasVisited == false)
+            if (adjMat[v][j] > 0 && vertexList[j].wasVisited == false && adjMat[v][j] < INFINITY)
                 return j;
         return -1;
     } // end getAdjUnvisitedVertex()
 
-    public void bfs() // breadth-first search
+    public void bfs(int startingPoint) // breadth-first search
     { // begin at vertex 0
-        vertexList[0].wasVisited = true; // mark it
-        displayVertex(0); // display it
-        theQueue.insert(0); // insert at tail
+        vertexList[startingPoint].wasVisited = true; // mark it
+        displayVertex(startingPoint); // display it
+        theQueue.insert(startingPoint); // insert at tail
         int v2;
         while (!theQueue.isEmpty()) // until queue empty,
         {

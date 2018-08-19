@@ -36,9 +36,9 @@ public class App {
         theGraph.addEdge(12, 13, 80); // Highway -> Paranam
 
 
-        // TODO: de applicatie moet de korste route kunnen detecteren van de Garage naar zijn punt
-        // TODO: een vaste bedrag moet aangegeven kunnen worden om te zien hoever de persoon kan gaan
-        theGraph.shortestPathToArea("NATIN", 30);
+        // TODO: de applicatie moet de korste route kunnen detecteren van de Garage naar zijn punt (DONE!)
+        // TODO: een vaste bedrag moet aangegeven kunnen worden om te zien hoever de persoon kan gaan (DONE!)
+        // theGraph.shortestPathToArea("NATIN", 30);
 
         // TODO: de applicatie moet de langste route kunnen berekenen
         // Dijkstra algoritme gewoon omkeren
@@ -48,14 +48,14 @@ public class App {
         // read user input with a reader
 
         // TODO: hoeveel zones zitten tussen de centrale en waarnaar je toe wilt
-        theGraph.shortestPathToArea("NATIN", 30);
+        // theGraph.shortestPathToArea("NATIN", 30);
 
-        // TODO: zone dichtbij van de gewenste zone
-        // int startingArea = theGraph.dfs("NATIN");
-        // System.out.println(startingArea);
-        theGraph.bfs();
+        // TODO: zone dichtbij van de gewenste zone (DONE!)
         // eerst zoeken naar de zone met een dept first search
+        int startingArea = theGraph.dfs("NATIN");
+        System.out.println("Beginunt is: " + startingArea);
         // de index gebruiken om verder te gaan met een breath first search
+        theGraph.bfs(startingArea);
 
     }
 }
