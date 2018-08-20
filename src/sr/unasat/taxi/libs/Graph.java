@@ -32,6 +32,10 @@ public class Graph {
         theQueue = new Queue();
     } // end constructor
 
+    public int countVertex() {
+        return nVerts - 1;
+    }
+
     public void addVertex(String lab) {
         vertexList[nVerts++] = new Vertex(lab);
     }
@@ -91,6 +95,56 @@ public class Graph {
         return indexMin; // return index of minimum
     } // end getMin()
 
+    public void longestPathToArea(String area, double amount) // find the shortest path to area
+    {
+        int startTree = 0; // start at vertex 0
+        vertexList[startTree].isInTree = true;
+        nTree = 1; // put it in tree
+        // transfer row of distances from adjMat to sPath
+        for (int j = 0; j < nVerts; j++) {
+            int tempDist = adjMat[startTree][j];
+            sPath[j] = new DistPar(startTree, tempDist);
+        }
+        // until all vertices are in the tree
+        while (nTree < nVerts) {
+            int indexMin = getMax(); // get minimum from sPath
+            int minDist = sPath[indexMin].distance;
+            if (minDist == INFINITY) // if all infinite
+            { // or in tree,
+                System.out.println("There are unreachable vertices");
+                break; // sPath is complete
+            } else { // reset currentVert
+                currentVert = indexMin; // to closest vert
+                startToCurrent = sPath[indexMin].distance;
+                // minimum distance from startTree is
+                // to currentVert, and is startToCurrent
+            }
+            // put current vertex in tree
+            vertexList[currentVert].isInTree = true;
+            nTree++;
+            adjust_sPath(); // update sPath[] array
+        } // end while(nTree<nVerts)
+        displayPaths(area, amount); // display sPath[] contents
+        nTree = 0; // clear tree
+        for (int j = 0; j < nVerts; j++)
+            vertexList[j].isInTree = false;
+    } // end path()
+
+    public int getMax() // get entry from sPath
+    { // with maximum distance
+        int maxDist = INFINITY; // assume minimum
+        int indexMax = 0;
+        for (int j = 1; j < nVerts; j++) // for each vertex,
+        { // if it's in tree and
+            if (!vertexList[j].isInTree && // smaller than old one
+                    sPath[j].distance < maxDist) {
+                maxDist = sPath[j].distance;
+                indexMax = j; // update maximum
+            }
+        } // end for
+        return indexMax; // return index of minimum
+    } // end getMax()
+
     public void adjust_sPath() {
         // adjust values in shortest-path array sPath
         int column = 1; // skip starting vertex
@@ -148,7 +202,7 @@ public class Graph {
     public int dfs(String area) // depth-first search
     { // begin at vertex 0
         vertexList[0].wasVisited = true; // mark it
-        // displayVertex(0); // display it
+        displayVertex(0); // display it
         theStack.push(0); // push it
 
         int foundArea = -1;
@@ -161,7 +215,7 @@ public class Graph {
             else // if it exists,
             {
                 vertexList[v].wasVisited = true; // mark it
-                // displayVertex(v); // display it
+                displayVertex(v); // display it
                 theStack.push(v); // push it
 
                 // if the area is found exit out of the loop
