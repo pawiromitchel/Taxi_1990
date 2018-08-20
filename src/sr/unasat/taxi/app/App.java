@@ -44,27 +44,27 @@ public class App {
         // TODO: de applicatie moet de langste route kunnen berekenen
         // Dijkstra algoritme gewoon omkeren
         // lijk makkelijk heh? lol xD
-        // theGraph.longestPathToArea("Domburg", 100000);
+        theGraph.longestPathToArea("Domburg", 100000);
 
         // TODO: zelf toevoegen van een area en edges (DONE!)
         // read user input with a reader
-        Scanner scan = new Scanner(System.in);
-        System.out.println("The last index is: " + theGraph.countVertex());
-        System.out.println("Insert your new label: ");
-        String label = scan.nextLine();
-        theGraph.addVertex(label);
-
-        System.out.println("Insert your startIndex: ");
-        int startIndex = scan.nextInt();
-
-        int endIndex = theGraph.countVertex() - 1;
-
-        System.out.println("Insert the weight: ");
-        int weight = scan.nextInt();
-
-        theGraph.addEdge(startIndex, endIndex, weight);
-        System.out.println("Inserted new area");
-        System.out.println("Start: " + startIndex + " End: " + endIndex + " Weight: " + weight);
+//        Scanner scan = new Scanner(System.in);
+//        System.out.println("The last index is: " + theGraph.countVertex());
+//        System.out.println("Insert your new label: ");
+//        String label = scan.nextLine();
+//        theGraph.addVertex(label);
+//
+//        System.out.println("Insert your startIndex: ");
+//        int startIndex = scan.nextInt();
+//
+//        int endIndex = theGraph.countVertex() - 1;
+//
+//        System.out.println("Insert the weight: ");
+//        int weight = scan.nextInt();
+//
+//        theGraph.addEdge(startIndex, endIndex, weight);
+//        System.out.println("Inserted new area");
+//        System.out.println("Start: " + startIndex + " End: " + endIndex + " Weight: " + weight);
 
         // TODO: hoeveel zones zitten tussen de centrale en waarnaar je toe wilt (DONE!)
         // theGraph.dfs("NATIN");
