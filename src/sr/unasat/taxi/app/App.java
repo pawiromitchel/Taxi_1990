@@ -43,9 +43,10 @@ public class App {
 
         // TODO: de applicatie moet de langste route kunnen berekenen
         // Dijkstra algoritme gewoon omkeren
+        // lijk makkelijk heh? lol xD
         // theGraph.longestPathToArea("Domburg", 100000);
 
-        // TODO: zelf toevoegen van een area en edges
+        // TODO: zelf toevoegen van een area en edges (DONE!)
         // read user input with a reader
         Scanner scan = new Scanner(System.in);
         System.out.println("The last index is: " + theGraph.countVertex());
@@ -65,8 +66,7 @@ public class App {
         System.out.println("Inserted new area");
         System.out.println("Start: " + startIndex + " End: " + endIndex + " Weight: " + weight);
 
-
-        // TODO: hoeveel zones zitten tussen de centrale en waarnaar je toe wilt
+        // TODO: hoeveel zones zitten tussen de centrale en waarnaar je toe wilt (DONE!)
         // theGraph.dfs("NATIN");
 
         // TODO: zone dichtbij van de gewenste zone (DONE!)
