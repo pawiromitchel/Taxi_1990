@@ -42,7 +42,6 @@ public class Graph {
 
     public void addEdge(int start, int end, int weight) {
         adjMat[start][end] = weight; // (directed)
-        adjMat[end][start] = weight; // (directed)
     }
 
     public void shortestPathToArea(String area, double amount) // find the shortest path to area
@@ -103,26 +102,32 @@ public class Graph {
         // transfer row of distances from adjMat to sPath
         for (int j = 0; j < nVerts; j++) {
             int tempDist = adjMat[startTree][j];
-            sPath[j] = new DistPar(startTree, tempDist);
+
+            if(tempDist == INFINITY) {
+                tempDist = 0;
+                sPath[j] = new DistPar(startTree, tempDist);
+            } else {
+                sPath[j] = new DistPar(startTree, tempDist);
+            }
         }
         // until all vertices are in the tree
         while (nTree < nVerts) {
-            int indexMax = getMax(); // get maximum from sPath
-            int minDist = sPath[indexMax].distance;
+            int indexMin = getMax(); // get minimum from sPath
+            int minDist = sPath[indexMin].distance;
             if (minDist == INFINITY) // if all infinite
             { // or in tree,
                 System.out.println("There are unreachable vertices");
                 break; // sPath is complete
             } else { // reset currentVert
-                currentVert = indexMax; // to closest vert
-                startToCurrent = sPath[indexMax].distance;
+                currentVert = indexMin; // to closest vert
+                startToCurrent = sPath[indexMin].distance;
                 // minimum distance from startTree is
                 // to currentVert, and is startToCurrent
             }
             // put current vertex in tree
             vertexList[currentVert].isInTree = true;
             nTree++;
-            adjust_sPath_Max(); // update sPath[] array
+            adjust_lPath(); // update sPath[] array
         } // end while(nTree<nVerts)
         displayPaths(area, amount); // display sPath[] contents
         nTree = 0; // clear tree
@@ -132,17 +137,17 @@ public class Graph {
 
     public int getMax() // get entry from sPath
     { // with maximum distance
-        int maxDist = INFINITY; // assume maximum
+        int maxDist = 0; // assume minimum
         int indexMax = 0;
         for (int j = 1; j < nVerts; j++) // for each vertex,
         { // if it's in tree and
             if (!vertexList[j].isInTree && // smaller than old one
-                    sPath[j].distance > maxDist && sPath[j].distance != INFINITY) {
+                    sPath[j].distance > maxDist) {
                 maxDist = sPath[j].distance;
                 indexMax = j; // update maximum
             }
         } // end for
-        return indexMax; // return index of maximum
+        return indexMax; // return index of minimum
     } // end getMax()
 
     public void adjust_sPath() {
@@ -172,7 +177,7 @@ public class Graph {
         } // end while(column < nVerts)
     } // end adjust_sPath()
 
-    public void adjust_sPath_Max() {
+    public void adjust_lPath() {
         // adjust values in shortest-path array sPath
         int column = 1; // skip starting vertex
         while (column < nVerts) // go across columns
@@ -185,12 +190,17 @@ public class Graph {
             // calculate distance for one sPath entry
             // get edge from currentVert to column
             int currentToFringe = adjMat[currentVert][column];
+
+            if (currentToFringe == INFINITY) {
+                currentToFringe = 0;
+            }
+
             // add distance from start
             int startToFringe = startToCurrent + currentToFringe;
             // get distance of current sPath entry
             int sPathDist = sPath[column].distance;
             // compare distance from start with sPath entry
-            if (startToFringe > sPathDist && sPathDist != INFINITY) // if shorter,
+            if (startToFringe > sPathDist && startToFringe != startToCurrent) // if shorter,
             { // update sPath
                 sPath[column].parentVert = currentVert;
                 sPath[column].distance = startToFringe;
@@ -218,9 +228,9 @@ public class Graph {
                 System.out.println("(" + parent + ") "); // (A)
 
                 // if the amount is under the next distance
-                if (amount >= sPath[j].distance && amount < sPath[j + 1].distance) {
-                    System.out.println("---> Arrived till here <---");
-                }
+//                if (amount >= sPath[j].distance && amount < sPath[j + 1].distance) {
+//                    System.out.println("---> Arrived till here <---");
+//                }
             }
         }
     }

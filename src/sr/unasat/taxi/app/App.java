@@ -36,15 +36,16 @@ public class App {
         theGraph.addEdge(0, 12, 95); // Centrum -> Highway
         theGraph.addEdge(12, 10, 50); // Highway -> Domburg
         theGraph.addEdge(12, 13, 80); // Highway -> Paranam
+        theGraph.addEdge(13, 11, 40); // Paranam -> White beach
 
         // TODO: de applicatie moet de korste route kunnen detecteren van de Garage naar zijn punt (DONE!)
         // TODO: een vaste bedrag moet aangegeven kunnen worden om te zien hoever de persoon kan gaan (DONE!)
-        // theGraph.shortestPathToArea("NATIN", 30);
+        // theGraph.shortestPathToArea("Domburg", 5000);
 
         // TODO: de applicatie moet de langste route kunnen berekenen
         // Dijkstra algoritme gewoon omkeren
         // lijk makkelijk heh? lol xD
-        theGraph.longestPathToArea("Domburg", 100000);
+        theGraph.longestPathToArea("Domburg", 5000);
 
         // TODO: zelf toevoegen van een area en edges (DONE!)
         // read user input with a reader
