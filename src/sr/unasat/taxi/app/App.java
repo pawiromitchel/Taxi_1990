@@ -2,11 +2,11 @@ package sr.unasat.taxi.app;
 
 import sr.unasat.taxi.libs.Graph;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class App {
-    public static void main(String[] args) {
-
+    public static Graph initGraph() {
         Graph theGraph = new Graph();
         theGraph.addVertex("Centrum"); // 0 (start)
         theGraph.addVertex("Maretraite Mall"); // 1
@@ -38,43 +38,65 @@ public class App {
         theGraph.addEdge(12, 13, 80); // Highway -> Paranam
         theGraph.addEdge(13, 11, 40); // Paranam -> White beach
 
-        // TODO: de applicatie moet de korste route kunnen detecteren van de Garage naar zijn punt (DONE!)
-        // TODO: een vaste bedrag moet aangegeven kunnen worden om te zien hoever de persoon kan gaan (DONE!)
-        // theGraph.shortestPathToArea("Domburg", 5000);
+        return theGraph;
+    }
 
-        // TODO: de applicatie moet de langste route kunnen berekenen
-        // Dijkstra algoritme gewoon omkeren
-        // lijk makkelijk heh? lol xD
-        theGraph.longestPathToArea("Domburg", 5000);
+    public static void printAreasGoingThrough(List areas) {
+        System.out.println("---> Areas going through <---");
+        areas.forEach(area -> System.out.println(area));
+    }
 
-        // TODO: zelf toevoegen van een area en edges (DONE!)
-        // read user input with a reader
-//        Scanner scan = new Scanner(System.in);
-//        System.out.println("The last index is: " + theGraph.countVertex());
-//        System.out.println("Insert your new label: ");
-//        String label = scan.nextLine();
-//        theGraph.addVertex(label);
-//
-//        System.out.println("Insert your startIndex: ");
-//        int startIndex = scan.nextInt();
-//
-//        int endIndex = theGraph.countVertex() - 1;
-//
-//        System.out.println("Insert the weight: ");
-//        int weight = scan.nextInt();
-//
-//        theGraph.addEdge(startIndex, endIndex, weight);
-//        System.out.println("Inserted new area");
-//        System.out.println("Start: " + startIndex + " End: " + endIndex + " Weight: " + weight);
+    public static void zelfToevoegenVanEdges(Graph theGraph) {
+        Scanner scan = new Scanner(System.in);
+        System.out.println("The last index is: " + theGraph.countVertex());
+        System.out.println("Insert your new label: ");
+        String label = scan.nextLine();
+        theGraph.addVertex(label);
 
-        // TODO: hoeveel zones zitten tussen de centrale en waarnaar je toe wilt (DONE!)
-        // theGraph.dfs("NATIN");
+        System.out.println("Insert your startIndex: ");
+        int startIndex = scan.nextInt();
 
-        // TODO: zone dichtbij van de gewenste zone (DONE!)
-        // eerst zoeken naar de zone met een dept first search
-        // int startingArea = theGraph.dfs("NATIN");
-        // System.out.println("Beginunt is: " + startingArea);
-        // de index gebruiken om verder te gaan met een breath first search
-        // theGraph.bfs(startingArea);
+        int endIndex = theGraph.countVertex() - 1;
+
+        System.out.println("Insert the weight: ");
+        int weight = scan.nextInt();
+
+        theGraph.addEdge(startIndex, endIndex, weight);
+        System.out.println("Inserted new area");
+        System.out.println("Start: " + startIndex + " End: " + endIndex + " Weight: " + weight);
+    }
+
+    public static void zonesTussenCentraleEnDesiredZone(Graph theGraph) {
+        printAreasGoingThrough(theGraph.dfs("Domburg", false));
+    }
+
+    public static void zoneDichtbijGewensteZone(Graph theGraph) {
+        printAreasGoingThrough(theGraph.dfs("Domburg", true));
+    }
+
+    public static void langsteRoute(Graph theGraph, String area) {
+        theGraph.longestPathToArea(area);
+    }
+
+    public static void korsteRoute(Graph theGraph, String area, int multiplier) {
+        theGraph.shortestPathToArea(area, multiplier);
+    }
+
+    // TODO: De gebruiker moet een tarief kunnen aangeven en zien tot waar hij naar toe kan gaan
+    public static void routeMetTarief() {
+
+    }
+
+    // TODO: vaste tarief en naam van elk area moet aangepast kunnen worden
+    public static void editArea(Graph theGraph, String areaToChange, String newAreaLabel, int oldStartEdge, int oldEndEdge, int newAmount){
+        theGraph.editArea(areaToChange, newAreaLabel, oldStartEdge, oldEndEdge, newAmount);
+    }
+
+    public static void main(String[] args) {
+        Graph theGraph = initGraph();
+
+        editArea(theGraph, "Domburg", "Domburg Waterkant", 9, 10, 50);
+
+        korsteRoute(theGraph, "Domburg Waterkant", 1);
     }
 }
