@@ -1,5 +1,8 @@
 package sr.unasat.taxi.libs;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Graph {
     private final int MAX_VERTS = 20;
     private final int INFINITY = 1000000;
@@ -44,7 +47,7 @@ public class Graph {
         adjMat[start][end] = weight; // (directed)
     }
 
-    public void shortestPathToArea(String area, double amount) // find the shortest path to area
+    public void shortestPathToArea(String area, int multiplier) // find the shortest path to area
     {
         int startTree = 0; // start at vertex 0
         vertexList[startTree].isInTree = true;
@@ -71,9 +74,9 @@ public class Graph {
             // put current vertex in tree
             vertexList[currentVert].isInTree = true;
             nTree++;
-            adjust_sPath(); // update sPath[] array
+            adjust_sPath(multiplier); // update sPath[] array
         } // end while(nTree<nVerts)
-        displayPaths(area, amount); // display sPath[] contents
+        displayPaths(area); // display sPath[] contents
         nTree = 0; // clear tree
         for (int j = 0; j < nVerts; j++)
             vertexList[j].isInTree = false;
@@ -94,7 +97,7 @@ public class Graph {
         return indexMin; // return index of minimum
     } // end getMin()
 
-    public void longestPathToArea(String area, double amount) // find the shortest path to area
+    public void longestPathToArea(String area) // find the shortest path to area
     {
         int startTree = 0; // start at vertex 0
         vertexList[startTree].isInTree = true;
@@ -103,7 +106,7 @@ public class Graph {
         for (int j = 0; j < nVerts; j++) {
             int tempDist = adjMat[startTree][j];
 
-            if(tempDist == INFINITY) {
+            if (tempDist == INFINITY) {
                 tempDist = 0;
                 sPath[j] = new DistPar(startTree, tempDist);
             } else {
@@ -129,7 +132,7 @@ public class Graph {
             nTree++;
             adjust_lPath(); // update sPath[] array
         } // end while(nTree<nVerts)
-        displayPaths(area, amount); // display sPath[] contents
+        displayPaths(area); // display sPath[] contents
         nTree = 0; // clear tree
         for (int j = 0; j < nVerts; j++)
             vertexList[j].isInTree = false;
@@ -150,7 +153,7 @@ public class Graph {
         return indexMax; // return index of minimum
     } // end getMax()
 
-    public void adjust_sPath() {
+    public void adjust_sPath(int multiplier) {
         // adjust values in shortest-path array sPath
         int column = 1; // skip starting vertex
         while (column < nVerts) // go across columns
@@ -164,7 +167,7 @@ public class Graph {
             // get edge from currentVert to column
             int currentToFringe = adjMat[currentVert][column];
             // add distance from start
-            int startToFringe = startToCurrent + currentToFringe;
+            int startToFringe = (startToCurrent + currentToFringe) * multiplier;
             // get distance of current sPath entry
             int sPathDist = sPath[column].distance;
             // compare distance from start with sPath entry
@@ -209,56 +212,86 @@ public class Graph {
         } // end while(column < nVerts)
     } // end adjust_sPath()
 
-    public void displayPaths(String area, double amount) {
+    public void displayPaths(String desiredAreaToGo) {
+
+        // array to hold the vertices
+        List vertexLevel = new ArrayList();
+
         for (int j = 0; j < nVerts; j++) // display contents of sPath[]
         {
-            String parent = vertexList[sPath[j].parentVert].label;
+            // parent -> child = SRD ...
+            String buildString = "";
 
-            // when the loop reaches the required area
-            if (CompareTo.execute(area, parent) == 0) {
-                System.out.println("---> You have arrived! <---");
-                break;
+            String areaComingFrom = vertexList[sPath[j].parentVert].label;
+            String areaGoingTo = vertexList[j].label;
+            int areaAmount = sPath[j].distance;
+
+            buildString = areaComingFrom + " -> " + areaGoingTo;
+
+            if (areaAmount == INFINITY) {
+                buildString = buildString + " = Start";
             } else {
-                System.out.print(vertexList[j].label + "="); // B=
-                if (sPath[j].distance == INFINITY) {
-                    System.out.print("inf"); // inf
-                } else {
-                    System.out.print(sPath[j].distance); // 50
-                }
-                System.out.println("(" + parent + ") "); // (A)
+                buildString = buildString + " = SRD " + areaAmount;
+            }
 
-                // if the amount is under the next distance
-//                if (amount >= sPath[j].distance && amount < sPath[j + 1].distance) {
-//                    System.out.println("---> Arrived till here <---");
-//                }
+            // detect if areaComingFrom is Centrum, this means that the search is on another level
+            if(CompareTo.execute(areaComingFrom, "Centrum") == 0){
+                // clear the arrayList
+                vertexLevel.clear();
+            }
+
+            // add to level
+            vertexLevel.add(buildString);
+
+            // detect if the area is found
+            if(CompareTo.execute(areaGoingTo, desiredAreaToGo) == 0) {
+                vertexLevel.add("You must pay SRD " + areaAmount);
+                // jump out of the for loop
+                break;
             }
         }
+
+        // print
+        vertexLevel.forEach(element -> System.out.println(element));
     }
 
     // search for a area
-    public int dfs(String area) // depth-first search
+    public List dfs(String area, boolean searchForSurroundingAreas) // depth-first search
     { // begin at vertex 0
         vertexList[0].wasVisited = true; // mark it
-        displayVertex(0); // display it
+        // displayVertex(0); // display it
         theStack.push(0); // push it
 
-        int foundArea = -1;
+        List areas = new ArrayList();
+
         while (!theStack.isEmpty()) // until stack empty,
         {
             // get an unvisited vertex adjacent to stack top
             int v = getAdjUnvisitedVertex(theStack.peek());
-            if (v == -1) // if no such vertex,
+            if (v == -1) {
+                // if no such vertex,
                 theStack.pop();
-            else // if it exists,
+                // clear the arraylist
+                areas.clear();
+            } else // if it exists,
             {
                 vertexList[v].wasVisited = true; // mark it
-                displayVertex(v); // display it
+                // displayVertex(v); // display it
                 theStack.push(v); // push it
+
+                // push into the array
+                areas.add(vertexList[v].label);
 
                 // if the area is found exit out of the loop
                 if (CompareTo.execute(vertexList[v].label, area) == 0) {
-                    foundArea = v;
-                    break;
+                    if(searchForSurroundingAreas){
+                        // search for surrounding areas
+                        bfs(v);
+                        break;
+                    } else {
+                        // stop the loop when the area is found
+                        break;
+                    }
                 }
             }
         } // end while
@@ -266,7 +299,7 @@ public class Graph {
         for (int j = 0; j < nVerts; j++) // reset flags
             vertexList[j].wasVisited = false;
 
-        return foundArea;
+        return areas;
     } // end dfs
 
     public void displayVertex(int v) {
@@ -282,8 +315,9 @@ public class Graph {
 
     public void bfs(int startingPoint) // breadth-first search
     { // begin at vertex 0
+        System.out.println("---> Surrounding Areas <---");
         vertexList[startingPoint].wasVisited = true; // mark it
-        displayVertex(startingPoint); // display it
+        // displayVertex(startingPoint); // display it
         theQueue.insert(startingPoint); // insert at tail
         int v2;
         while (!theQueue.isEmpty()) // until queue empty,
@@ -295,9 +329,51 @@ public class Graph {
                 displayVertex(v2); // display it
                 theQueue.insert(v2); // insert it
             } // end while
+            break;
         } // end while(queue not empty)
         // queue is empty, so we’re done
         for (int j = 0; j < nVerts; j++) // reset flags
             vertexList[j].wasVisited = false;
     } // end bfs()
+
+    public void editArea(String area, String newAreaLabel, int startEdge, int endEdge, int amount){
+        vertexList[0].wasVisited = true; // mark it
+        theStack.push(0); // push it
+
+        boolean found = false;
+
+        while (!theStack.isEmpty()) // until stack empty,
+        {
+            // get an unvisited vertex adjacent to stack top
+            int v = getAdjUnvisitedVertex(theStack.peek());
+            if (v == -1) {
+                // if no such vertex,
+                theStack.pop();
+            } else // if it exists,
+            {
+                vertexList[v].wasVisited = true; // mark it
+                theStack.push(v); // push it
+
+                // if the area is found exit out of the loop
+                if (CompareTo.execute(vertexList[v].label, area) == 0) {
+                    found = true;
+                    // stop the loop when the area is found
+                    System.out.println("Found area, changing name now");
+                    vertexList[v].label = newAreaLabel;
+                    System.out.println("Changing its edges");
+                    // adjMat[startEdge][endEdge] = amount;
+                    System.out.println("Here's the new name:");
+                    System.out.println(vertexList[v].label);
+                    break;
+                }
+            }
+        } // end while
+        // stack is empty, so we’re done
+        for (int j = 0; j < nVerts; j++) // reset flags
+            vertexList[j].wasVisited = false;
+
+        if(!found) {
+            System.out.println("Area not found");
+        }
+    }
 } // end class Graph
