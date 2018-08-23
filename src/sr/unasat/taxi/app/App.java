@@ -82,12 +82,10 @@ public class App {
         theGraph.shortestPathToArea(area, multiplier);
     }
 
-    // TODO: De gebruiker moet een tarief kunnen aangeven en zien tot waar hij naar toe kan gaan
-    public static void routeMetTarief() {
-
+    public static void routeMetTarief(Graph theGraph, double amount) {
+        theGraph.areasBasedOnAmount(amount, 1);
     }
 
-    // TODO: vaste tarief en naam van elk area moet aangepast kunnen worden
     public static void editArea(Graph theGraph, String areaToChange, String newAreaLabel, int oldStartEdge, int oldEndEdge, int newAmount){
         theGraph.editArea(areaToChange, newAreaLabel, oldStartEdge, oldEndEdge, newAmount);
     }
@@ -95,8 +93,6 @@ public class App {
     public static void main(String[] args) {
         Graph theGraph = initGraph();
 
-        editArea(theGraph, "Domburg", "Domburg Waterkant", 9, 10, 50);
-
-        korsteRoute(theGraph, "Domburg Waterkant", 1);
+        routeMetTarief(theGraph, 120);
     }
 }

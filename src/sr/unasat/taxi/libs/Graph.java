@@ -255,6 +255,84 @@ public class Graph {
         vertexLevel.forEach(element -> System.out.println(element));
     }
 
+    public void displayPathsBasedOnAmount(double amount) {
+
+        // array to hold the vertices
+        List vertexLevel = new ArrayList();
+
+        for (int j = 0; j < nVerts; j++) // display contents of sPath[]
+        {
+            // parent -> child = SRD ...
+            String buildString = "";
+
+            String areaComingFrom = vertexList[sPath[j].parentVert].label;
+            String areaGoingTo = vertexList[j].label;
+            int areaAmount = sPath[j].distance;
+
+            int nextAreaAmount = INFINITY;
+
+            if(sPath[j + 1] != null) {
+                nextAreaAmount = sPath[j + 1].distance;
+            }
+
+            buildString = areaComingFrom + " -> " + areaGoingTo;
+
+            if (areaAmount == INFINITY) {
+                buildString = buildString + " = Start";
+            } else {
+                buildString = buildString + " = SRD " + areaAmount;
+            }
+
+            // add to level
+            vertexLevel.add(buildString);
+
+            if(amount >= areaAmount && amount < nextAreaAmount) {
+                vertexLevel.add("---> Amount reached <---");
+                vertexLevel.add("---> You can go until this area: " + areaGoingTo);
+                vertexLevel.add("---> You must pay: SRD" + areaAmount);
+                vertexLevel.add("---> Amount reached <---");
+            }
+        }
+
+        // print
+        vertexLevel.forEach(element -> System.out.println(element));
+    }
+
+
+    public void areasBasedOnAmount(double amount, int multiplier){
+        int startTree = 0; // start at vertex 0
+        vertexList[startTree].isInTree = true;
+        nTree = 1; // put it in tree
+        // transfer row of distances from adjMat to sPath
+        for (int j = 0; j < nVerts; j++) {
+            int tempDist = adjMat[startTree][j];
+            sPath[j] = new DistPar(startTree, tempDist);
+        }
+        // until all vertices are in the tree
+        while (nTree < nVerts) {
+            int indexMin = getMin(); // get minimum from sPath
+            int minDist = sPath[indexMin].distance;
+            if (minDist == INFINITY) // if all infinite
+            { // or in tree,
+                System.out.println("There are unreachable vertices");
+                break; // sPath is complete
+            } else { // reset currentVert
+                currentVert = indexMin; // to closest vert
+                startToCurrent = sPath[indexMin].distance;
+                // minimum distance from startTree is
+                // to currentVert, and is startToCurrent
+            }
+            // put current vertex in tree
+            vertexList[currentVert].isInTree = true;
+            nTree++;
+            adjust_sPath(multiplier); // update sPath[] array
+        } // end while(nTree<nVerts)
+        displayPathsBasedOnAmount(amount); // display sPath[] contents
+        nTree = 0; // clear tree
+        for (int j = 0; j < nVerts; j++)
+            vertexList[j].isInTree = false;
+    }
+
     // search for a area
     public List dfs(String area, boolean searchForSurroundingAreas) // depth-first search
     { // begin at vertex 0
